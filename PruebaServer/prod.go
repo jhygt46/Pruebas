@@ -41,6 +41,7 @@ func main() {
 		for j := uint32(101); j <= 200; j++ {
 			key := append(Int32tobytes(i), Int32tobytes(j)...)
 			pass.SaveDb(key, Bytes)
+			fmt.Println("SAVE KEY", key)
 		}
 	}
 	fmt.Println("SAVE DB")
