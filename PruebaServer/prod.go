@@ -81,16 +81,17 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 				cat := ParamBytes(ctx.QueryArgs().Peek("cat"))
 				cuad := ParamBytes(ctx.QueryArgs().Peek("cuad"))
 
-				Key := append(ParamBytes(cat), Int32tobytes(cuad)...)
+				Key := append(cat, cuad...)
 				item, err := txn.Get(Key)
 				if err == nil {
 					val, err := item.ValueCopy(nil)
 					if err == nil {
 						fmt.Println(val)
-						fmt.Fprintf(ctx, val)
+						fmt.Fprintf(ctx, string(val))
 					}
 				}
 				return nil
+
 			})
 			check(err)
 			
@@ -107,7 +108,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			for i := istart; i < iend; i++ {
 				for j := jstart; j < jend; j++ {
 					key := append(Int32tobytes(i), Int32tobytes(j)...)
-					pass.SaveDb(key, Bytes)
+					h.SaveDb(key, Bytes)
 				}
 			}
 
@@ -124,7 +125,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			for i := istart; i < iend; i++ {
 				for j := jstart; j < jend; j++ {
 					key := append(Int32tobytes(i), Int32tobytes(j)...)
-					pass.SaveDb2(key, Bytes)
+					h.SaveDb2(key, Bytes)
 				}
 			}
 
