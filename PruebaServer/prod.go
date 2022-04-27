@@ -30,6 +30,13 @@ var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 func main() {
 
+	var port string
+	if runtime.GOOS == "windows" {
+		port = ":81"
+	}else{
+		port = ":80"
+	}
+
 	db := GetDb()
 	pass := &MyHandler{
 		Conf:    Config{},
@@ -62,7 +69,7 @@ func main() {
 		}
 	}()
 	go func() {
-		fasthttp.ListenAndServe(":81", pass.HandleFastHTTP)
+		fasthttp.ListenAndServe(port, pass.HandleFastHTTP)
 	}()
 	if err := run(con, pass, os.Stdout); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
