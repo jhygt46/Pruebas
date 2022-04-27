@@ -36,17 +36,17 @@ func main() {
 		Db:      db,
 	}
 	
-	txn := db.NewTransaction(true)
+	wb := db.NewWriteBatch()
+	defer wb.Cancel()
+
 	Bytes := make([]byte, 10000)
 	for i := 0; i < 256; i++ {
 		for j := 0; j < 256; j++ {
 			key := append([]byte{uint8(i)}, []byte{uint8(j)}...)
-			err := txn.SetEntry(badger.NewEntry(key, Bytes))
-			if err != nil { panic(err) }
+			wb.Set(key, Bytes)
 		}
 	}
-	err := txn.Commit()
-	if err != nil { panic(err) }
+	wb.Flush()
 	fmt.Println("SAVE DB")
 	
 
@@ -157,4 +157,9 @@ func Reverse(numbers []uint8) []uint8 {
 		numbers[i], numbers[j] = numbers[j], numbers[i]
 	}
 	return numbers
+}
+func check(err error) {
+	if err != nil {
+		fmt.Println(err)
+	}
 }
