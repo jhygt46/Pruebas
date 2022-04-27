@@ -153,11 +153,12 @@ func GetDb() *badger.DB {
 		opts = badger.DefaultOptions("/var/db")
 	}
 	opts.Logger = nil
+	opts.SyncWrites = false
 	db, err := badger.Open(opts)
 	if err != nil {
 		panic(err)
 	}
-	//defer db.Close()
+	defer db.Close()
 	return db
 }
 func (h *MyHandler) SaveDb2(key []byte, value []byte){
