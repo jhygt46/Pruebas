@@ -111,6 +111,7 @@ func GetDb() *badger.DB {
 }
 func (h *MyHandler) SaveDb(key []uint8, value []uint8) {
 	txn := h.Db.NewTransaction(true)
+	defer txn.Discard()
 	err := txn.SetEntry(badger.NewEntry(key, value))
 	if err != nil {
 		panic(err)
