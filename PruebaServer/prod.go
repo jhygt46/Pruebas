@@ -35,7 +35,7 @@ func main() {
 		Conf:    Config{},
 		Db:      db,
 	}
-	/*
+	
 	Bytes := make([]byte, 10000)
 	for i := uint32(1); i <= 600; i++ {
 		for j := uint32(1); j <= 600; j++ {
@@ -44,7 +44,7 @@ func main() {
 		}
 	}
 	fmt.Println("SAVE DB")
-	*/
+	
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
