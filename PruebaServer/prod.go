@@ -36,9 +36,9 @@ func main() {
 		Db:      db,
 	}
 	
-	Bytes := make([]byte, 1000)
-	for i := uint32(101); i <= 200; i++ {
-		for j := uint32(101); j <= 200; j++ {
+	Bytes := make([]byte, 10000)
+	for i := uint32(0); i < 100; i++ {
+		for j := uint32(0); j < 100; j++ {
 			key := append(Int32tobytes(i), Int32tobytes(j)...)
 			pass.SaveDb(key, Bytes)
 			fmt.Println("SAVE KEY", key)
