@@ -36,14 +36,17 @@ func main() {
 		Db:      db,
 	}
 	
+	txn := db.NewTransaction(true)
 	Bytes := make([]byte, 10000)
 	for i := 0; i < 256; i++ {
 		for j := 0; j < 256; j++ {
 			key := append([]byte{uint8(i)}, []byte{uint8(j)}...)
-			pass.SaveDb(key, Bytes)
-			fmt.Println("SAVE KEY", key)
+			err := txn.SetEntry(badger.NewEntry(key, Bytes))
+			if err != nil { panic(err) }
 		}
 	}
+	err = txn.Commit()
+	if err != nil { panic(err) }
 	fmt.Println("SAVE DB")
 	
 
@@ -111,7 +114,6 @@ func GetDb() *badger.DB {
 }
 func (h *MyHandler) SaveDb(key []uint8, value []uint8) {
 	txn := h.Db.NewTransaction(true)
-	defer txn.Discard()
 	err := txn.SetEntry(badger.NewEntry(key, value))
 	if err != nil {
 		panic(err)
