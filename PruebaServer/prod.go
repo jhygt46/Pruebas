@@ -45,7 +45,7 @@ func main() {
 			if err != nil { panic(err) }
 		}
 	}
-	err = txn.Commit()
+	err := txn.Commit()
 	if err != nil { panic(err) }
 	fmt.Println("SAVE DB")
 	
