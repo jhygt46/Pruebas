@@ -94,13 +94,13 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 					val, err := item.ValueCopy(nil)
 					if err == nil {
 						fmt.Println(val)
-						fmt.Fprintf(ctx, string(val))
 					}
 				}
 				return nil
 
 			})
 			check(err)
+			fmt.Fprintf(ctx, "HOLA0")
 			
 		case "/insert1":
 
@@ -118,6 +118,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 					h.SaveDb(key, Bytes)
 				}
 			}
+			fmt.Fprintf(ctx, "HOLA1")
 
 		case "/insert2":
 
@@ -135,6 +136,7 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 					h.SaveDb2(key, Bytes)
 				}
 			}
+			fmt.Fprintf(ctx, "HOLA2")
 
 		default:
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
