@@ -158,7 +158,7 @@ func GetDb() *badger.DB {
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+	//defer db.Close()
 	return db
 }
 func (h *MyHandler) SaveDb2(key []byte, value []byte){
