@@ -36,7 +36,7 @@ func main() {
 		Db:      db,
 	}
 	
-	Bytes := make([]byte, 1000)
+	Bytes := make([]byte, 10000)
 	for i := 0; i < 256; i++ {
 		for j := 0; j < 256; j++ {
 			key := append([]byte{uint8(i)}, []byte{uint8(j)}...)
