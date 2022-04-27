@@ -35,20 +35,6 @@ func main() {
 		Conf:    Config{},
 		Db:      db,
 	}
-	
-	wb := db.NewWriteBatch()
-	defer wb.Cancel()
-
-	Bytes := make([]byte, 10000)
-	for i := 0; i < 256; i++ {
-		for j := 0; j < 256; j++ {
-			key := append([]byte{uint8(i)}, []byte{uint8(j)}...)
-			wb.Set(key, Bytes)
-		}
-	}
-	wb.Flush()
-	fmt.Println("SAVE DB")
-	
 
 	con := context.Background()
 	con, cancel := context.WithCancel(con)
@@ -90,6 +76,58 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		switch string(ctx.Path()) {
 		case "/":
 			
+			err := h.Db.View(func(txn *badger.Txn) error {
+
+				cat := ParamBytes(ctx.QueryArgs().Peek("cat"))
+				cuad := ParamBytes(ctx.QueryArgs().Peek("cuad"))
+
+				Key := append(ParamBytes(cat), Int32tobytes(cuad)...)
+				item, err := txn.Get(Key)
+				if err == nil {
+					val, err := item.ValueCopy(nil)
+					if err == nil {
+						fmt.Println(val)
+						fmt.Fprintf(ctx, val)
+					}
+				}
+				return nil
+			})
+			check(err)
+			
+		case "/insert1":
+
+			istart := ParamUint32(ctx.QueryArgs().Peek("istart"))
+			jstart := ParamUint32(ctx.QueryArgs().Peek("jstart"))
+
+			iend := ParamUint32(ctx.QueryArgs().Peek("iend"))
+			jend := ParamUint32(ctx.QueryArgs().Peek("jend"))
+
+			Bytes := make([]byte, 10000)
+
+			for i := istart; i < iend; i++ {
+				for j := jstart; j < jend; j++ {
+					key := append(Int32tobytes(i), Int32tobytes(j)...)
+					pass.SaveDb(key, Bytes)
+				}
+			}
+
+		case "/insert2":
+
+			istart := ParamUint32(ctx.QueryArgs().Peek("istart"))
+			jstart := ParamUint32(ctx.QueryArgs().Peek("jstart"))
+
+			iend := ParamUint32(ctx.QueryArgs().Peek("iend"))
+			jend := ParamUint32(ctx.QueryArgs().Peek("jend"))
+
+			Bytes := make([]byte, 10000)
+
+			for i := istart; i < iend; i++ {
+				for j := jstart; j < jend; j++ {
+					key := append(Int32tobytes(i), Int32tobytes(j)...)
+					pass.SaveDb2(key, Bytes)
+				}
+			}
+
 		default:
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
@@ -112,16 +150,16 @@ func GetDb() *badger.DB {
 	//defer db.Close()
 	return db
 }
-func (h *MyHandler) SaveDb(key []uint8, value []uint8) {
+func (h *MyHandler) SaveDb2(key []byte, value []byte){
+	wb := h.Db.NewWriteBatch()
+	defer wb.Cancel()
+	check(wb.Set(key, value))
+	check(wb.Flush())
+}
+func (h *MyHandler) SaveDb(key []byte, value []byte) {
 	txn := h.Db.NewTransaction(true)
-	err := txn.SetEntry(badger.NewEntry(key, value))
-	if err != nil {
-		panic(err)
-	}
-	err = txn.Commit()
-	if err != nil {
-		panic(err)
-	}
+	check(txn.SetEntry(badger.NewEntry(key, value)))
+	check(txn.Commit())
 }
 
 // DAEMON //
@@ -145,7 +183,22 @@ func run(con context.Context, c *MyHandler, stdout io.Writer) error {
 		}
 	}
 }
-
+func ParamUint32(data []byte) uint32 {
+	var x uint32
+	for _, c := range data {
+		x = x*10 + uint32(c-'0')
+	}
+	return x
+}
+func ParamBytes(data []byte) []byte {
+	var x uint32
+	for _, c := range data {
+		x = x*10 + uint32(c-'0')
+	}
+	b := make([]byte, 4)
+	binary.LittleEndian.PutUint32(b, x)
+	return Reverse(b)
+}
 func Int32tobytes(i uint32) []byte {
 	b := make([]byte, 4)
 	binary.LittleEndian.PutUint32(b, i)
