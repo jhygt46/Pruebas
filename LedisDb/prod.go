@@ -55,8 +55,8 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			TestCuad := []uint32{5, 10, 23, 45, 98, 102, 132, 143, 189, 203, 245, 289, 304, 325, 367, 398, 402, 412, 434, 456, 469, 476, 488, 493}
 			
 			now := time.Now()
-			for i:=0; i<len(TestCat); i++ {
-				for j:=0; j<len(TestCuad); j++ {
+			for i:=uint32(0); i<len(TestCat); i++ {
+				for j:=uint32(0); j<len(TestCuad); j++ {
 
 					key := append(Int32tobytes(i), Int32tobytes(j)...)
 					val, _ := h.Db.Get(key)
