@@ -19,16 +19,16 @@ func main() {
 	l, _ := ledis.Open(cfg)
 	db, _ := l.Select(0)
 
+	/*
 	value := make([]byte, 5000)
-
 	for i := uint32(0); i < 1800; i++ {
 		for j := uint32(0); j < 500; j++ {
 			key := append(Int32tobytes(i), Int32tobytes(j)...)
-			fmt.Println(key)
 			db.Set(key, value)
 		}
 	}
 	fmt.Println("SAVE DB")
+	*/
 
 	var port string
 	if runtime.GOOS == "windows" {
@@ -48,11 +48,23 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 		switch string(ctx.Path()) {
 		case "/":
 			
-			cat := ParamBytes(ctx.QueryArgs().Peek("cat"))
-			cuad := ParamBytes(ctx.QueryArgs().Peek("cuad"))
-			key := append(cat, cuad...)
-			val, _ := h.Db.Get(key)
-			fmt.Println(key, val)
+			//cat := ParamBytes(ctx.QueryArgs().Peek("cat"))
+			//cuad := ParamBytes(ctx.QueryArgs().Peek("cuad"))
+
+			TestCat := []uint32{3, 9, 132, 189, 376, 487, 563, 612, 682, 732, 745, 795, 823, 882, 923, 945, 1012, 1087, 1123, 1129, 1221, 1276, 1387, 1412, 1445, 1498, 1512, 1572, 1676, 1704, 1734, 1765, 1787}
+			TestCuad := []uint32{5, 10, 23, 45, 98, 102, 132, 143, 189, 203, 245, 289, 304, 325, 367, 398, 402, 412, 434, 456, 469, 476, 488, 493}
+			
+			now := time.Now()
+			for i:=0; i<len(TestCat); i++ {
+				for j:=0; j<len(TestCuad); j++ {
+
+					key := append(Int32tobytes(i), Int32tobytes(j)...)
+					val, _ := h.Db.Get(key)
+					Silence(val)
+
+				}
+			}
+			fmt.Println("time elapse:", time.Since(now))
 			fmt.Fprintf(ctx, "HOLA")
 
 		case "/insert":
@@ -63,6 +75,9 @@ func (h *MyHandler) HandleFastHTTP(ctx *fasthttp.RequestCtx) {
 			ctx.Error("Not Found", fasthttp.StatusNotFound)
 		}
 	}
+
+}
+func Silence(b []byte){
 
 }
 func ParamBytes(data []byte) []byte {
